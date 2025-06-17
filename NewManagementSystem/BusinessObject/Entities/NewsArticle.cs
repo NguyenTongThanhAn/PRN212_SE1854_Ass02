@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NewsManagementSystem.DAL.Models;
+namespace NewsManagementSystem.BusinessObject.Entities;
 
 public partial class NewsArticle
 {

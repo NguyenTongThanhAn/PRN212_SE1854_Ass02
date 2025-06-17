@@ -2,7 +2,7 @@
 #nullable disable
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using NewsManagementSystem.DAL.Models;
+using NewsManagementSystem.BusinessObject.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +23,7 @@ public partial class FUNewsManagementContext : DbContext
 
     public virtual DbSet<NewsArticle> NewsArticles { get; set; }
 
-    public virtual DbSet<SystemAccount> SystemAccounts { get; set; }
+    public virtual DbSet<BusinessObject.Entities.SystemAccount> SystemAccounts { get; set; }
 
     public virtual DbSet<Tag> Tags { get; set; }
 
@@ -31,19 +31,19 @@ public partial class FUNewsManagementContext : DbContext
     //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
     //        => optionsBuilder.UseSqlServer("Data Source=ENTITIA;Initial Catalog=FUNewsManagement;User ID=sa;Password=12345;Encrypt=False");
 
-public static string GetConnectionString(string connectionStringName)
-{
-    var config = new ConfigurationBuilder()
-        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-        .AddJsonFile("appsettings.json")
-        .Build();
+// public static string GetConnectionString(string connectionStringName)
+// {
+//     var config = new ConfigurationBuilder()
+//         .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+//         .AddJsonFile("appsettings.json")
+//         .Build();
+//
+//     string connectionString = config.GetConnectionString(connectionStringName);
+//     return connectionString;
+// }
 
-    string connectionString = config.GetConnectionString(connectionStringName);
-    return connectionString;
-}
-
-protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+// protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//     => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
 protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -121,16 +121,16 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                     });
         });
 
-        modelBuilder.Entity<SystemAccount>(entity =>
+        modelBuilder.Entity<BusinessObject.Entities.SystemAccount>(entity =>
         {
             entity.HasKey(e => e.AccountId).HasName("PK__SystemAc__349DA586DFF64BEF");
 
             entity.ToTable("SystemAccount");
 
-            entity.Property(e => e.AccountId).HasColumnName("AccountID");
-            entity.Property(e => e.AccountEmail).HasMaxLength(70);
-            entity.Property(e => e.AccountName).HasMaxLength(100);
-            entity.Property(e => e.AccountPassword).HasMaxLength(70);
+            entity.Property<object>(e => e.AccountId).HasColumnName("AccountID");
+            entity.Property<object>(e => e.AccountEmail).HasMaxLength(70);
+            entity.Property<object>(e => e.AccountName).HasMaxLength(100);
+            entity.Property<object>(e => e.AccountPassword).HasMaxLength(70);
         });
 
         modelBuilder.Entity<Tag>(entity =>

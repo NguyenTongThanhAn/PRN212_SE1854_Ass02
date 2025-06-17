@@ -1,0 +1,47 @@
+﻿@page
+@model ArticlesModel
+
+@{
+    Layout = "Shared/_Layout";
+    ViewData["title"] = "Articles"; 
+}
+
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    @if (Model.Articles.Count == 0)
+    {
+        <p class="text-muted">Không có bài viết nào đang hoạt động.</p>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Nguồn</th>
+                <th>Ngày tạo</th>
+                <th>Tag</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var article in Model.Articles)
+            {
+                <tr>
+                    <td>@article.NewsTitle</td>
+                    <td>@article.NewsSource</td>
+                    <td>@(article.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                    <td>
+                        @if (article.Tags != null && article.Tags.Any())
+                        {
+                            @string.Join(", ", article.Tags.Select(t => t.TagName))
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+
+</div>
