@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NewsManagementSystem.DAL.Models;
+namespace NewsManagementSystem.BusinessObject.Entities;
 
 public partial class Category
 {
@@ -15,7 +15,7 @@ public partial class Category
 
     public int? ParentCategoryId { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     public virtual ICollection<Category> InverseParentCategory { get; set; } = new List<Category>();
 
