@@ -1,4 +1,8 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NewManagementSystem.SignalR.Hubs;
+using NewManagementSystem.Validation;
+using NewManagementSystem.ViewModel;
 using NewsManagementSystem.BLL.Services.Article;
 using NewsManagementSystem.BLL.Services.Category;
 using NewsManagementSystem.BLL.Services.SystemAccount;
@@ -36,9 +40,13 @@ namespace NewManagementSystem
             builder.Services.AddScoped<ITagService, TagService>();
             builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 
+            //Register validator
+            builder.Services.AddScoped<IValidator<CreateArticlesRequest>, CreateArticleReqValidator>();
+            builder.Services.AddScoped<IValidator<EditArticlesRequest>, EditArticlesReqValidator>();
             
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddSignalR();
 
             var app = builder.Build();
 
@@ -52,6 +60,7 @@ namespace NewManagementSystem
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.MapHub<ArticlesHub>("/articlesHub");
 
             app.UseRouting();
 

@@ -16,8 +16,10 @@ public class ArticleRepo : IArticleRepo
     public async Task<List<NewsArticle>> GetArticleAsync()
     {
         return await _context.NewsArticles
-            .Where(a => (bool)a.NewsStatus)
+            .Include(a => a.Category)
             .Include(a => a.Tags)
+            .Include(a => a.CreatedBy)
+            .OrderByDescending(a => a.CreatedDate)
             .ToListAsync();
     }
 
@@ -31,7 +33,12 @@ public class ArticleRepo : IArticleRepo
     public async Task<List<NewsArticle>> GetActiveArticlesAsync()
     {
         return await _context.NewsArticles
-            .Where(a => (bool)a.NewsStatus)
+            .Where(a => (bool)a.NewsStatus == true)
+            .Include(a => a.Category)
+            .Include(a => a.Tags)
+            .Include(a => a.CreatedBy)
+            .OrderByDescending(a => a.ModifiedDate)
+            .ThenBy(a => a.CreatedDate)
             .ToListAsync();
     }
 
@@ -45,7 +52,7 @@ public class ArticleRepo : IArticleRepo
     }
 
 
-    public async Task CreateArticleAsync(NewsArticle article)
+    public async Task<NewsArticle> CreateArticleAsync(NewsArticle article)
     {
         if (article.Tags != null && article.Tags.Any())
         {
@@ -54,30 +61,42 @@ public class ArticleRepo : IArticleRepo
                 _context.Entry(tag).State = EntityState.Unchanged;
             }
         }
-
+        article.CreatedDate = DateTime.UtcNow;
         _context.NewsArticles.Add(article);
         await _context.SaveChangesAsync();
+        var created = await _context.NewsArticles
+            .Include(a => a.Tags)
+            .Include(a => a.Category)
+            .Include(a => a.CreatedBy)
+            .FirstOrDefaultAsync(a => a.NewsArticleId == article.NewsArticleId);
+        return created;
     }
 
-    public async Task UpdateArticleAsync(NewsArticle article, List<int> tagIds)
+    public async Task<NewsArticle> UpdateArticleAsync(NewsArticle article)
     {
         var result = await _context.NewsArticles
             .Include(a => a.Tags)
             .FirstOrDefaultAsync(x => x.NewsArticleId == article.NewsArticleId);
 
-        if (result == null) return;
+        if (result == null) return null;
 
-        result.NewsTitle = article.NewsTitle;
-        result.Headline = article.Headline;
-        result.NewsContent = article.NewsContent;
-        result.NewsSource = article.NewsSource;
-        result.ModifiedDate = article.ModifiedDate;
-        result.CategoryId = article.CategoryId;
-        
+        if (!string.Equals(result.NewsTitle, article.NewsTitle))
+            result.NewsTitle = article.NewsTitle;
+        if (!string.Equals(result.Headline, article.Headline))
+            result.Headline = article.Headline;
+        if (!string.Equals(result.NewsContent, article.NewsContent))
+            result.NewsContent = article.NewsContent;
+        if (!string.Equals(result.NewsSource, article.NewsSource)) 
+            result.NewsSource = article.NewsSource;
+        if (result.NewsStatus != article.NewsStatus)
+            result.NewsStatus = article.NewsStatus;
+        if (result.CategoryId != article.CategoryId)
+            result.CategoryId = article.CategoryId;
+        result.ModifiedDate = DateTime.UtcNow;
         result.Tags?.Clear();
-        if (tagIds != null && tagIds.Count > 0)
+        if (article.Tags != null && article.Tags.Count > 0)
         {
-            var tags = await _context.Tags.Where(t => tagIds.Contains(t.TagId)).ToListAsync();
+            var tags = await _context.Tags.Where(t => article.Tags.Select(tag => tag.TagId).Contains(t.TagId)).ToListAsync();
             foreach (var tag in tags)
             {
                 result.Tags.Add(tag);
@@ -85,27 +104,22 @@ public class ArticleRepo : IArticleRepo
         }
 
         await _context.SaveChangesAsync();
+        return result;
     }
 
-public async Task<NewsArticle?> GetArticleByIdWithTagsAsync(int id)
-{
-    return await _context.NewsArticles
-        .Include(a => a.Tags)
-        .FirstOrDefaultAsync(a => a.NewsArticleId == id);
-}
 
 
-    public async Task DeleteArticleAsync(NewsArticle article)
+    public async Task<NewsArticle> DeleteArticleAsync(int newsArticleId)
     {
         var result = await _context.NewsArticles
             .Include(a => a.Tags)
-            .FirstOrDefaultAsync(a => a.NewsArticleId == article.NewsArticleId);
-
-        if (result == null) return;
-
-        result.Tags.Clear();
-        _context.NewsArticles.Remove(result);
+            .FirstOrDefaultAsync(x => x.NewsArticleId == newsArticleId);
+            
+        if (result == null) return null;
+            
+        result.NewsStatus = false;
         await _context.SaveChangesAsync();
+        return result;
     }
 
     public async Task<List<NewsArticle>> GetArticlesByNameAsync(string search)

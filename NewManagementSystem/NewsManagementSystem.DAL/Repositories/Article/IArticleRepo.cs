@@ -8,9 +8,9 @@ public interface IArticleRepo
     Task<List<NewsArticle>> GetArticlesyncOderByDescending();
     Task<List<NewsArticle>> GetActiveArticlesAsync();
     Task<List<NewsArticle>> GetArticlesByCategoryIdAsync(short categoryId);
-    Task CreateArticleAsync(NewsArticle category);
-    Task UpdateArticleAsync(NewsArticle category, List<int> selectedTagIds);
-    Task DeleteArticleAsync(NewsArticle category);
+    Task<NewsArticle> CreateArticleAsync(NewsArticle category);
+    Task<NewsArticle> UpdateArticleAsync(NewsArticle category);
+    Task<NewsArticle> DeleteArticleAsync(int articleID);
     Task<List<NewsArticle>> GetArticlesByNameAsync(string search);
     Task<List<NewsArticle>> GetArticleByDateRange(DateTime? startDate, DateTime? endDate);
     Task<List<NewsArticle>> GetArticlesByAccountIdAsync(short userId);

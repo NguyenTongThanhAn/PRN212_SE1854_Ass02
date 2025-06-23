@@ -1,0 +1,145 @@
+﻿@page
+@model NewsArticlesModel
+
+@{
+    Layout = "Shared/_Layout";
+}
+
+@section Scripts {
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/articlesHub")
+        .build();
+
+    connection.on("ReceiveNewArticle", function (article) {
+        insertArticleCard(article);
+    });
+
+    connection.on("ReceiveUpdatedArticle", function (article) {
+        if (article.newsStatus) {
+            const existingCard = document.querySelector(`[data-article-id="${article.newsArticleId}"]`);
+            if (existingCard) {
+                updateArticleCard(article);
+            } else {
+                insertArticleCard(article);
+            }
+        } else {
+            deleteArticleCard(article);
+        }
+    });
+
+    connection.on("ReceiveDeletedArticle", function (article) {
+        deleteArticleCard(article);
+    });
+
+    connection.start()
+        .then(() => console.log("SignalR Connected"))
+        .catch(err => console.error("SignalR Connection Error:", err));
+
+    function createCardHTML(article) {
+        return `
+            <div class="col-md-4" data-article-id="${article.newsArticleId}">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="${article.imageUrl || '#'}" alt="Article image">
+                    <div class="card-body">
+                        <h5 class="card-title">${article.headline || 'Untitled'}</h5>
+                        <p class="card-text">${article.newsContent ? article.newsContent.split('.')[0] : 'No content'}</p>
+                        <p class="text-muted">by ${article.accountName || 'Unknown'}</p>
+                        <a href="/article/${article.newsArticleId}" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function insertArticleCard(article) {
+        const container = document.getElementById("card-news-container");
+        let firstRow = container.querySelector(".row");
+
+        if (!firstRow) {
+            firstRow = document.createElement("div");
+            firstRow.className = "row mb-4";
+            container.prepend(firstRow);
+        }
+
+        const newCard = document.createElement("div");
+        newCard.innerHTML = createCardHTML(article);
+        firstRow.prepend(newCard.firstElementChild);
+
+        // Ensure max 3 per row
+        if (firstRow.children.length > 3) {
+            const overflowCard = firstRow.children[3];
+            let nextRow = firstRow.nextElementSibling;
+
+            if (!nextRow || !nextRow.classList.contains("row")) {
+                nextRow = document.createElement("div");
+                nextRow.className = "row mb-4";
+                container.insertBefore(nextRow, firstRow.nextSibling);
+            }
+
+            nextRow.prepend(overflowCard);
+        }
+    }
+
+    function updateArticleCard(article) {
+        const cardCol = document.querySelector(`[data-article-id="${article.newsArticleId}"]`);
+        if (cardCol) {
+            cardCol.outerHTML = createCardHTML(article);
+        }
+    }
+
+    function deleteArticleCard(article) {
+        const cardCol = document.querySelector(`[data-article-id="${article.newsArticleId}"]`);
+        if (cardCol) cardCol.remove();
+    }
+</script>
+}
+
+<h1>News Articles</h1>
+
+@if (Model.Articles.Count == 0)
+{
+    <p class="text-muted">No articles are currently published.</p>
+}
+else
+{
+    <div class="container" id="card-news-container">
+        @for (int i = 0; i < Model.Articles.Count; i += 3)
+        {
+            <div class="row mb-4">
+                @for (int j = i; j < Math.Min(i + 3, Model.Articles.Count); j++)
+                {
+                    var article = Model.Articles[j];
+                    <div class="col-md-4" data-article-id="@article.NewsArticleId">
+                        <div class="card" style="width: 18rem;">
+                            <img class="card-img-top" src="@(article.ImageUrl ?? "#")" alt="Article image">
+                            <div class="card-body">
+                                <h5 class="card-title">@(article.Headline ?? "Untitled")</h5>
+                                <p class="card-text">@(article.NewsContent?.Length > 0 ? article.NewsContent.Split('.').FirstOrDefault() : "No content")</p>
+                                <p class="text-muted">by @(article.CreatedBy?.AccountName ?? "Unknown")</p>
+                                <a href="/article/@article.NewsArticleId" class="btn btn-primary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+}
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="/NewsArticles?page=@(Model.CurrentPage - 1)">Previous</a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" href="/NewsArticles?page=@i">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="/NewsArticles?page=@(Model.CurrentPage + 1)">Next</a>
+        </li>
+    </ul>
+</nav>
