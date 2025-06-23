@@ -38,14 +38,14 @@ public class CategoryService : ICategoryService
         {
             CategoryName = category.CategoryName,
             CategoryDesciption = category.CategoryDesciption,
-            IsActive = true
+            IsActive = category.IsActive,
         };
 
         await _categoryRepo.CreateCategoryAsync(categoryModel);
 
-        categoryModel.ParentCategoryId = categoryModel.CategoryId;
-
-        await _categoryRepo.UpdateCategoryAsync(categoryModel);
+        // categoryModel.ParentCategoryId = categoryModel.CategoryId;
+        //
+        // await _categoryRepo.UpdateCategoryAsync(categoryModel);
     }
 
     public async Task UpdateCategoryAsync(BusinessObject.Entities.Category category)
@@ -68,7 +68,7 @@ public class CategoryService : ICategoryService
         await _categoryRepo.DeleteCategoryAsync(category);
     }
 
-    public async Task<BusinessObject.Entities.Category?> GetCategoryByIdAsync(short categoryId)
+    public async Task<BusinessObject.Entities.Category?> GetCategoryByIdAsync(int categoryId)
     {
         if (categoryId <= 0)
         {
@@ -78,7 +78,7 @@ public class CategoryService : ICategoryService
         return await _categoryRepo.GetCategoryByIdAsync(categoryId);
     }
 
-    public async Task<bool> CategoryExistsAsync(short categoryId)
+    public async Task<bool> CategoryExistsAsync(int categoryId)
     {
         if (categoryId <= 0)
         {
