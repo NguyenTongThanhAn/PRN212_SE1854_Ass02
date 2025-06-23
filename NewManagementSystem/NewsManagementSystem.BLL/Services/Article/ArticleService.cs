@@ -35,31 +35,24 @@ public class ArticleService : IArticleService
         return await _articleRepo.GetArticlesByCategoryIdAsync(categoryId);
     }
 
-    public Task CreateArticleAsync(NewsArticle article) => _articleRepo.CreateArticleAsync(article);
+    public Task<NewsArticle> CreateArticleAsync(NewsArticle article) => _articleRepo.CreateArticleAsync(article);
 
-    public async Task CreateArticleWithTagsAsync(NewsArticle article, List<int> tagIds)
-    {
-        var tags = await _tagRepo.GetTagsByIdsAsync(tagIds);
-        article.Tags = tags;
-        await _articleRepo.CreateArticleAsync(article);
-    }
+    // public async Task CreateArticleWithTagsAsync(NewsArticle article, List<int> tagIds)
+    // {
+    //     var tags = await _tagRepo.GetTagsByIdsAsync(tagIds);
+    //     article.Tags = tags;
+    //     await _articleRepo.CreateArticleAsync(article);
+    // }
     
-    public async Task UpdateArticleWithTagsAsync(NewsArticle article, List<int> tagIds)
+    public async Task<NewsArticle> UpdateArticleAsync(NewsArticle article)
     {
-        await _articleRepo.UpdateArticleAsync(article, tagIds);
+        return await _articleRepo.UpdateArticleAsync(article);
     }
 
 
-    public Task DeleteArticleAsync(NewsArticle article) => _articleRepo.DeleteArticleAsync(article);
+    // public Task<NewsArticle> DeleteArticleAsync(int newsArticleId) => _articleRepo.DeleteArticleAsync(newsArticleId);
 
-    public async Task DeleteArticleByIdAsync(int id)
-    {
-        var article = await GetArticleByIdWithTagsAsync(id);
-        if (article != null)
-        {
-            await _articleRepo.DeleteArticleAsync(article);
-        }
-    }
+    public async Task<NewsArticle> DeleteArticleByIdAsync(int id) => await _articleRepo.DeleteArticleAsync(id);
 
     public async Task<List<NewsArticle>> GetArticlesyncOrderByDesending()
     {

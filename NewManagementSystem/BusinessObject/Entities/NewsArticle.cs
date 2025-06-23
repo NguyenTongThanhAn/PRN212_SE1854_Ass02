@@ -21,7 +21,7 @@ public partial class NewsArticle
 
     public int? CategoryId { get; set; }
 
-    public bool? NewsStatus { get; set; }
+    public bool NewsStatus { get; set; } = true;
 
     public int? CreatedById { get; set; }
 
