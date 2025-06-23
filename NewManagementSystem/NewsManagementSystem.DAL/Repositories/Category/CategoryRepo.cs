@@ -16,7 +16,6 @@ public class CategoryRepo : ICategoryRepo
     public async Task<List<BusinessObject.Entities.Category>> GetCategoriesAsync()
     {
         return await _context.Categories
-            .Where(c => c.IsActive)
             .ToListAsync();
     }
     
@@ -58,6 +57,7 @@ public class CategoryRepo : ICategoryRepo
         //_context.Categories.Update(existingCategory);
         existingCategory.CategoryName = category.CategoryName;
         existingCategory.CategoryDesciption = category.CategoryDesciption;
+        existingCategory.IsActive = category.IsActive;
         await _context.SaveChangesAsync();
     }
 
@@ -85,11 +85,6 @@ public class CategoryRepo : ICategoryRepo
         // Set IsActive to false instead of deleting the category
         existingCategory.IsActive = false;
         await _context.SaveChangesAsync();
-    }
-
-    public Task<bool> CategoryExistsAsync(short categoryId)
-    {
-        throw new NotImplementedException();
     }
 
 
