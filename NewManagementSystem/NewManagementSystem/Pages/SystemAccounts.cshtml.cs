@@ -54,14 +54,22 @@ public class SystemAccountsModel : PageModel
 
     public async Task<IActionResult> OnPostEditAsync()
     {
-        var account = new SystemAccount
+        var existingAccount = await _service.GetSystemAccountByIdAsync((short)EditAccount.AccountId);
+        if (existingAccount == null)
         {
-            AccountId = EditAccount.AccountId,
-            AccountName = EditAccount.AccountName,
-            AccountEmail = EditAccount.AccountEmail,
-            AccountRole = EditAccount.AccountRole,
-        };
-        await _service.UpdateSystemAccountAsync(account);
+            return NotFound();
+        }
+
+        existingAccount.AccountName = EditAccount.AccountName;
+        existingAccount.AccountEmail = EditAccount.AccountEmail;
+        existingAccount.AccountRole = EditAccount.AccountRole;
+
+        if (!string.IsNullOrWhiteSpace(EditAccount.AccountPassword))
+        {
+            existingAccount.AccountPassword = EditAccount.AccountPassword;
+        }
+
+        await _service.UpdateSystemAccountAsync(existingAccount);
         return RedirectToPage("./SystemAccounts");
     }
 

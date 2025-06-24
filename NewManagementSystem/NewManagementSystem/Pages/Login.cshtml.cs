@@ -56,7 +56,7 @@ namespace NewsManagementSystem.Pages
             
             if (user.AccountRole == 0)
             {
-                return RedirectToPage("/SystemAccount");
+                return RedirectToPage("/SystemAccounts");
             }
 
             return RedirectToPage("/Articles");
