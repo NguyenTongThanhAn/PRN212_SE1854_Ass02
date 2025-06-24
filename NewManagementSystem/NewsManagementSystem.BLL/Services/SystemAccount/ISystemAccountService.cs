@@ -18,5 +18,7 @@ namespace NewsManagementSystem.BLL.Services.SystemAccount
 
         Task DeleteSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount);
         Task<BusinessObject.Entities.SystemAccount?> AuthenticateAsync(string email, string password);
+        Task<List<BusinessObject.Entities.SystemAccount>> SearchAsync(string keyword);
+
     }
 }

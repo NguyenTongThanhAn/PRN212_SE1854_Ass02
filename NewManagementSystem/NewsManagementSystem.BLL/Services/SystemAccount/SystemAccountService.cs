@@ -46,6 +46,9 @@ namespace NewsManagementSystem.BLL.Services.SystemAccount
         {
             await _repository.DeleteSystemAccountAsync(systemAccount);
         }
+        
+        public Task<List<BO.SystemAccount>> SearchAsync(string keyword) => _repository.SearchAsync(keyword);
+
 
         public async Task<BO.SystemAccount?> AuthenticateAsync(string email, string password)
         {

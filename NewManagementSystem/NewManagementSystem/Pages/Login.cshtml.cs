@@ -53,6 +53,11 @@ namespace NewsManagementSystem.Pages
             HttpContext.Session.SetString("Role", user.AccountRole?.ToString() ?? "0");
             HttpContext.Session.SetString("Email", user.AccountEmail);
             HttpContext.Session.SetString("AccountName", user.AccountName);
+            
+            if (user.AccountRole == 0)
+            {
+                return RedirectToPage("/SystemAccount");
+            }
 
             return RedirectToPage("/Articles");
         }

@@ -17,5 +17,7 @@ namespace NewsManagementSystem.DAL.SystemAccount
 
         Task DeleteSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount);
         Task<BusinessObject.Entities.SystemAccount?> GetByEmailAndPasswordAsync(string email, string password);
+        Task<List<BusinessObject.Entities.SystemAccount>> SearchAsync(string keyword);
+
     }
 }

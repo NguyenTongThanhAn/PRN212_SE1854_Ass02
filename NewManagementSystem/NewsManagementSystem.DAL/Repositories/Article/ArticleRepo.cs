@@ -138,14 +138,21 @@ public class ArticleRepo : IArticleRepo
 
     public async Task<List<NewsArticle>> GetArticleByDateRange(DateTime? startDate, DateTime? endDate)
     {
-       var result = await _context.NewsArticles
+        var fromDate = startDate?.Date ?? DateTime.MinValue.Date;
+        var toDate = endDate?.Date ?? DateTime.MaxValue.Date;
+
+        var allArticles = await _context.NewsArticles
             .Include(a => a.Tags)
             .Include(a => a.Category)
-            .Where(a => a.CreatedDate >= startDate && a.CreatedDate <= endDate)
-            .OrderByDescending(a=>a.CreatedDate).ToListAsync();
-       
-        return result;
+            .Where(a => a.CreatedDate != null)
+            .ToListAsync();
+
+        return allArticles
+            .Where(a => a.CreatedDate!.Value.Date >= fromDate && a.CreatedDate!.Value.Date <= toDate)
+            .ToList();
     }
+
+
     
     public async Task<List<NewsArticle>> GetArticlesByAccountIdAsync(short userId)
     {

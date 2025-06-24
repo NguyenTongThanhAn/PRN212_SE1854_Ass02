@@ -58,5 +58,10 @@ namespace NewsManagementSystem.DAL.Repositories.SystemAccount
             return await _context.SystemAccounts
                 .FirstOrDefaultAsync(a => a.AccountEmail == email && a.AccountPassword == password);
         }
+        
+        public async Task<List<BO.SystemAccount>> SearchAsync(string keyword) =>
+            await _context.SystemAccounts
+                .Where(a => a.AccountName.Contains(keyword) || a.AccountEmail.Contains(keyword))
+                .ToListAsync();
     }
 }
