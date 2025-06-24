@@ -35,16 +35,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const chartData = @Html.Raw(Json.Serialize(Model.ChartPoints));
-        console.log(chartData); // check log ra array [{ date: '2024-05-05', totalArticles: 3 }, ...]
+        console.log(chartData); 
 
         if (chartData.length > 0) {
             new Chart(document.getElementById('chartCanvas'), {
-                type: 'bar', // thử đổi bar dễ debug
+                type: 'bar', 
                 data: {
                     labels: chartData.map(d => d.date),
                     datasets: [{
                         label: 'Articles per Day',
-                        data: chartData.map(d => d.totalArticles), // 🟢 ĐÚNG TÊN: phải là totalArticles
+                        data: chartData.map(d => d.totalArticles), 
                         borderColor: '#0d6efd',
                         backgroundColor: 'rgba(13, 110, 253, 0.4)',
                         borderWidth: 1,
