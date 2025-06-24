@@ -51,6 +51,7 @@ namespace NewsManagementSystem.Pages
             }
 
             HttpContext.Session.SetString("Role", user.AccountRole?.ToString() ?? "0");
+            HttpContext.Session.SetInt32("UserId", user.AccountId);
             HttpContext.Session.SetString("Email", user.AccountEmail);
             HttpContext.Session.SetString("AccountName", user.AccountName);
 

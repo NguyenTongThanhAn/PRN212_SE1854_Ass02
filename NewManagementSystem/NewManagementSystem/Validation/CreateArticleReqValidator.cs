@@ -24,7 +24,7 @@ public class CreateArticleReqValidator : AbstractValidator<CreateArticlesRequest
         RuleFor(a => a.NewsStatus)
             .NotNull().WithMessage("News Status is required");
         RuleFor(a => a.CategoryId)
-            .NotNull().WithMessage("Category is required");
+            .NotEmpty().WithMessage("Category is required");
         RuleFor(a => a.Tags)
             .NotEmpty().WithMessage("Tags are required")
             .Must(a => a.Count > 0).WithMessage("Tags are required");
