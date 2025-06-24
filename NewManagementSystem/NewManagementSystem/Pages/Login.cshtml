@@ -1,0 +1,22 @@
+﻿@page
+@model NewsManagementSystem.Pages.LoginModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<h2>Đăng nhập</h2>
+
+<form method="post">
+    <label>Email:</label><br />
+    <input asp-for="Email" /><br /><br />
+
+    <label>Mật khẩu:</label><br />
+    <input asp-for="Password" type="password" /><br /><br />
+
+    <button type="submit">Đăng nhập</button><br /><br />
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <p style="color:red">@Model.ErrorMessage</p>
+    }
+</form>

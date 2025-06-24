@@ -40,19 +40,27 @@ namespace NewsManagementSystem
             builder.Services.AddScoped<ITagService, TagService>();
             builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 
-            // ✅ Register Session
-            builder.Services.AddSession();
+            // ✅ Register FluentValidation (nếu dùng)
+            builder.Services.AddValidatorsFromAssemblyContaining<SystemAccountValidator>();
 
-            // ✅ Optional: If you need to inject IHttpContextAccessor
-            builder.Services.AddHttpContextAccessor();
+            // ✅ Register Session (phân quyền dùng Session)
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
-            // ✅ Add Razor Pages
+            // ✅ Add Razor Pages & SignalR
             builder.Services.AddRazorPages();
             builder.Services.AddSignalR();
 
+            // ✅ Optional: If you need HttpContext outside Razor Pages
+            builder.Services.AddHttpContextAccessor();
+
             var app = builder.Build();
 
-            // ✅ Configure middleware pipeline
+            // 🔧 Configure middleware
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
@@ -61,18 +69,19 @@ namespace NewsManagementSystem
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.MapHub<ArticlesHub>("/articlesHub");
 
             app.UseRouting();
 
-            // ✅ Enable Session before authorization
+            // ✅ Session MUST go before authorization
             app.UseSession();
 
             app.UseAuthorization();
 
             app.MapRazorPages();
+            app.MapHub<ArticlesHub>("/articlesHub");
 
             app.Run();
         }
     }
 }
+    

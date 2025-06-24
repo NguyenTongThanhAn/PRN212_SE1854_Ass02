@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using NewsManagementSystem.BLL.Services.Category;
 using NewsManagementSystem.BusinessObject.Entities;
-using System.ComponentModel.DataAnnotations;
 
 namespace NewManagementSystem.Pages;
 
@@ -28,22 +27,36 @@ public class Categories : PageModel
         _categoryService = categoryService;
     }
 
-    public async Task OnGet()
+    public async Task<IActionResult> OnGetAsync()
     {
+        var role = HttpContext.Session.GetString("Role");
+        if (role != "1") // ❌ Nếu không phải Staff
+        {
+            return RedirectToPage("/AccessDenied");
+        }
+
         Category = await _categoryService.GetCategoriesAsync();
         CategoryHasArticle = new();
+
         foreach (var cat in Category)
         {
             CategoryHasArticle[cat.CategoryId] = await _categoryService.CategoryExistsAsync(cat.CategoryId);
-
         }
+
+        return Page();
     }
 
     public async Task<IActionResult> OnPostCreateAsync()
     {
+        var role = HttpContext.Session.GetString("Role");
+        if (role != "1")
+        {
+            return RedirectToPage("/AccessDenied");
+        }
+
         if (!ModelState.IsValid)
         {
-            await OnGet();
+            await OnGetAsync();
             return Page();
         }
 
@@ -53,9 +66,15 @@ public class Categories : PageModel
 
     public async Task<IActionResult> OnPostEditAsync()
     {
+        var role = HttpContext.Session.GetString("Role");
+        if (role != "1")
+        {
+            return RedirectToPage("/AccessDenied");
+        }
+
         if (!ModelState.IsValid)
         {
-            await OnGet();
+            await OnGetAsync();
             return Page();
         }
 
@@ -65,6 +84,12 @@ public class Categories : PageModel
 
     public async Task<IActionResult> OnPostDeleteAsync()
     {
+        var role = HttpContext.Session.GetString("Role");
+        if (role != "1")
+        {
+            return RedirectToPage("/AccessDenied");
+        }
+
         var category = await _categoryService.GetCategoryByIdAsync(DeleteCategoryId);
         if (category != null)
         {
@@ -75,6 +100,12 @@ public class Categories : PageModel
 
     public async Task<JsonResult> OnGetCategoryAsync(int id)
     {
+        var role = HttpContext.Session.GetString("Role");
+        if (role != "1")
+        {
+            return new JsonResult(new { error = "Access Denied" });
+        }
+
         var category = await _categoryService.GetCategoryByIdAsync(id);
         return new JsonResult(category);
     }
