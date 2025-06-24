@@ -1,0 +1,135 @@
+﻿@page
+    @model SystemAccountsModel
+    @{
+        ViewData["Title"] = "System Account Management";
+    }
+
+    <h2>System Account Management</h2>
+
+    <form method="get">
+        <input type="text" name="keyword" value="@Model.SearchKeyword" placeholder="Search..." />
+        <button type="submit">Search</button>
+        <button type="button" data-bs-toggle="modal" data-bs-target="#createModal">Create</button>
+        <a class="btn btn-outline-dark" href="/Dashboard">Dashboard</a>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var acc in Model.Accounts)
+        {
+            <tr>
+                <td>@acc.AccountId</td>
+                <td>@acc.AccountName</td>
+                <td>@acc.AccountEmail</td>
+                <td>@acc.AccountPassword</td>
+                <td>@acc.AccountRole</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal"
+                            data-id="@acc.AccountId" data-name="@acc.AccountName" data-email="@acc.AccountEmail" data-role="@acc.AccountRole" data-password="@acc.AccountPassword">Edit</button>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            data-id="@acc.AccountId">Delete</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create System Account</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input asp-for="NewAccount.AccountName" class="form-control" placeholder="Name" />
+                        <input asp-for="NewAccount.AccountEmail" class="form-control" placeholder="Email" />
+                        <input asp-for="NewAccount.AccountPassword" class="form-control" placeholder="Password" />
+                        <input asp-for="NewAccount.AccountRole" class="form-control" placeholder="Role" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="post" asp-page-handler="Edit">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit System Account</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" asp-for="EditAccount.AccountId" id="edit-id" />
+                        <input asp-for="EditAccount.AccountName" class="form-control" id="edit-name" />
+                        <input asp-for="EditAccount.AccountEmail" class="form-control" id="edit-email" />
+                        <input asp-for="EditAccount.AccountRole" class="form-control" id="edit-role" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="post" asp-page-handler="Delete">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" asp-for="DeleteAccountId" id="delete-id" />
+                        <p>Are you sure you want to deactivate this account?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const editModal = document.getElementById('editModal');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            document.getElementById('edit-id').value = button.getAttribute('data-id');
+            document.getElementById('edit-name').value = button.getAttribute('data-name');
+            document.getElementById('edit-email').value = button.getAttribute('data-email');
+            document.getElementById('edit-password').value = button.getAttribute('data-password');
+            document.getElementById('edit-role').value = button.getAttribute('data-role');
+        });
+
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            document.getElementById('delete-id').value = button.getAttribute('data-id');
+        });
+    </script>
+    
+
