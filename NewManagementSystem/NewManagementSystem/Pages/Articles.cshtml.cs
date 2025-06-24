@@ -40,7 +40,12 @@ public class ArticlesModel : PageModel
     {
         var role = HttpContext.Session.GetString("Role");
 
-        if (role == "2" || string.IsNullOrEmpty(role)) // Lecturer hoặc chưa login
+        if (string.IsNullOrEmpty(role)) // ❌ Guest không được truy cập trang này
+        {
+            return RedirectToPage("/AccessDenied");
+        }
+
+        if (role == "2") // Lecturer chỉ được xem bài active
         {
             Articles = await _articleService.GetActiveArticlesAsync();
         }
@@ -64,7 +69,6 @@ public class ArticlesModel : PageModel
         if (role != "1" && role != "0") // Not Staff or Admin
             return RedirectToPage("/AccessDenied");
 
-        // TODO: Kiểm tra thủ công dữ liệu ArticlesRequest nếu cần
         Tags = await _tagService.GetAllTagsAsync();
         Categories = await _categoryService.GetCategoriesAsync();
 
@@ -76,7 +80,7 @@ public class ArticlesModel : PageModel
             NewsSource = ArticlesRequest.NewsSource,
             CategoryId = ArticlesRequest.CategoryId,
             NewsStatus = ArticlesRequest.NewsStatus,
-            CreatedById = 1, // TODO: lấy ID thực tế sau này
+            CreatedById = 1, // TODO: lấy ID người dùng từ session
             Tags = Tags.Where(t => ArticlesRequest.Tags.Any(tag => tag.TagId == t.TagId)).ToList()
         };
 
@@ -103,7 +107,7 @@ public class ArticlesModel : PageModel
             NewsSource = EditArticlesRequest.NewsSource,
             CategoryId = EditArticlesRequest.CategoryId,
             NewsStatus = EditArticlesRequest.NewsStatus,
-            UpdatedById = 1,
+            UpdatedById = 1, // TODO: lấy ID thực tế
             Tags = Tags.Where(t => EditArticlesRequest.Tags.Any(tag => tag.TagId == t.TagId)).ToList()
         };
 

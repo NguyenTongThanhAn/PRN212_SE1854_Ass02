@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Http;
 using NewsManagementSystem.BLL.Services.SystemAccount;
-using NewsManagementSystem.BusinessObject.Entities;
 using System.Threading.Tasks;
 
 namespace NewsManagementSystem.Pages
@@ -23,7 +22,14 @@ namespace NewsManagementSystem.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // ✅ Kiểm tra dữ liệu thủ công
+            // ✅ Nếu là logout
+            if (Request.Form.ContainsKey("logout"))
+            {
+                HttpContext.Session.Clear();
+                return Page(); // quay lại login rỗng
+            }
+
+            // ✅ Kiểm tra login input
             if (string.IsNullOrWhiteSpace(Email))
             {
                 ErrorMessage = "Email không được để trống.";
@@ -36,7 +42,6 @@ namespace NewsManagementSystem.Pages
                 return Page();
             }
 
-            // ✅ Gọi service để xác thực
             var user = await _accountService.AuthenticateAsync(Email, Password);
 
             if (user == null)
@@ -45,10 +50,9 @@ namespace NewsManagementSystem.Pages
                 return Page();
             }
 
-            // ✅ Lưu session sau khi đăng nhập
             HttpContext.Session.SetString("Role", user.AccountRole?.ToString() ?? "0");
             HttpContext.Session.SetString("Email", user.AccountEmail);
-            HttpContext.Session.SetString("Name", user.AccountName);
+            HttpContext.Session.SetString("AccountName", user.AccountName);
 
             return RedirectToPage("/Articles");
         }
