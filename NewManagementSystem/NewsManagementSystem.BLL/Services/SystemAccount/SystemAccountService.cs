@@ -1,72 +1,68 @@
 ﻿using Microsoft.Extensions.Configuration;
 using NewsManagementSystem.DAL.SystemAccount;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BO = NewsManagementSystem.BusinessObject.Entities;
 
 namespace NewsManagementSystem.BLL.Services.SystemAccount
 {
     public class SystemAccountService : ISystemAccountService
     {
-        private readonly ISystemAccountRepo _systemAccountRepo;
+        private readonly ISystemAccountRepo _repository;
         private readonly IConfiguration _config;
 
-        public SystemAccountService(ISystemAccountRepo systemAccountRepo, IConfiguration config)
+        public SystemAccountService(ISystemAccountRepo repository, IConfiguration config)
         {
-            _systemAccountRepo = systemAccountRepo;
+            _repository = repository;
             _config = config;
         }
 
-        public async Task<BusinessObject.Entities.SystemAccount?> AuthenticateAsync(string email, string password)
+        public async Task<List<BO.SystemAccount>> GetSystemAccountsAsync()
         {
-            
+            return await _repository.GetSystemAccountsAsync();
+        }
+
+        public async Task<List<BO.SystemAccount>> GetSystemAccountByNameAsync(string systemAccountName)
+        {
+            return await _repository.GetSystemAccountByNameAsync(systemAccountName);
+        }
+
+        public async Task CreateSystemAccountAsync(BO.SystemAccount systemAccount)
+        {
+            await _repository.CreateSystemAccountAsync(systemAccount);
+        }
+
+        public async Task<BO.SystemAccount?> GetSystemAccountByIdAsync(short id)
+        {
+            return await _repository.GetSystemAccountByIdAsync(id);
+        }
+
+        public async Task UpdateSystemAccountAsync(BO.SystemAccount systemAccount)
+        {
+            await _repository.UpdateSystemAccountAsync(systemAccount);
+        }
+
+        public async Task DeleteSystemAccountAsync(BO.SystemAccount systemAccount)
+        {
+            await _repository.DeleteSystemAccountAsync(systemAccount);
+        }
+
+        public async Task<BO.SystemAccount?> AuthenticateAsync(string email, string password)
+        {
             var adminEmail = _config["AdminAccount:Email"];
-            var adminPassword = _config["AdminAccount:Password"];
-            var adminRole = _config["AdminAccount:Role"];
-            if (email == adminEmail && password == adminPassword)
+            var adminPass = _config["AdminAccount:Password"];
+
+            if (email == adminEmail && password == adminPass)
             {
-                return new BusinessObject.Entities.SystemAccount
+                return new BO.SystemAccount
                 {
-                    AccountEmail = adminEmail,
-                    AccountPassword = adminPassword,
-                    AccountRole =  Convert.ToInt32(adminRole), // Admin
-                    AccountName = "Administrator"
+                    AccountEmail = email,
+                    AccountName = "Admin",
+                    AccountRole = 0
                 };
             }
 
-            
-            return await _systemAccountRepo.GetByEmailAndPasswordAsync(email, password);
-        }
-
-        public async Task CreateSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount)
-        {
-            await _systemAccountRepo.CreateSystemAccountAsync(systemAccount);
-        }
-
-        public async Task DeleteSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount)
-        {
-            await _systemAccountRepo.DeleteSystemAccountAsync(systemAccount);
-        }
-
-        public async Task<BusinessObject.Entities.SystemAccount?> GetSystemAccountByIdAsync(short id)
-        {
-            return await _systemAccountRepo.GetSystemAccountByIdAsync(id);
-        }
-
-        public async Task<List<BusinessObject.Entities.SystemAccount>> GetSystemAccountByNameAsync(
-            string systemAccountName)
-        {
-            return await _systemAccountRepo.GetSystemAccountByNameAsync(systemAccountName);
-        }
-
-        public async Task<List<BusinessObject.Entities.SystemAccount>> GetSystemAccountsAsync()
-        {
-            return await _systemAccountRepo.GetSystemAccountsAsync();
-        }
-
-        public async Task UpdateSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount)
-        {
-            await _systemAccountRepo.UpdateSystemAccountAsync(systemAccount);
+            return await _repository.GetByEmailAndPasswordAsync(email, password);
         }
     }
 }

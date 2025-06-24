@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NewManagementSystem.SignalR.Hubs;
 using NewManagementSystem.Validation;
@@ -10,10 +10,11 @@ using NewsManagementSystem.BLL.Services.Tag;
 using NewsManagementSystem.DAL.DBContext;
 using NewsManagementSystem.DAL.Repositories.Article;
 using NewsManagementSystem.DAL.Repositories.Category;
+using NewsManagementSystem.DAL.Repositories.SystemAccount;
 using NewsManagementSystem.DAL.Repositories.Tag;
 using NewsManagementSystem.DAL.SystemAccount;
 
-namespace NewManagementSystem
+namespace NewsManagementSystem
 {
     public class Program
     {
@@ -21,40 +22,40 @@ namespace NewManagementSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //Register DB
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStringDB");
+            // 🔧 Register DB Context
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             Console.WriteLine($"Connection string: {connectionString}");
             builder.Services.AddDbContext<FUNewsManagementContext>(options =>
                 options.UseSqlServer(connectionString));
 
-
-            //Register repositories
+            // 🔧 Register repositories
             builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
             builder.Services.AddScoped<IArticleRepo, ArticleRepo>();
             builder.Services.AddScoped<ITagRepo, TagRepo>();
             builder.Services.AddScoped<ISystemAccountRepo, SystemAccountRepo>();
 
-            //Register services
+            // 🔧 Register services
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IArticleService, ArticleService>();
             builder.Services.AddScoped<ITagService, TagService>();
             builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 
-            //Register validator
-            builder.Services.AddScoped<IValidator<CreateArticlesRequest>, CreateArticleReqValidator>();
-            builder.Services.AddScoped<IValidator<EditArticlesRequest>, EditArticlesReqValidator>();
-            
-            // Add services to the container.
+            // ✅ Register Session
+            builder.Services.AddSession();
+
+            // ✅ Optional: If you need to inject IHttpContextAccessor
+            builder.Services.AddHttpContextAccessor();
+
+            // ✅ Add Razor Pages
             builder.Services.AddRazorPages();
             builder.Services.AddSignalR();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // ✅ Configure middleware pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -63,6 +64,9 @@ namespace NewManagementSystem
             app.MapHub<ArticlesHub>("/articlesHub");
 
             app.UseRouting();
+
+            // ✅ Enable Session before authorization
+            app.UseSession();
 
             app.UseAuthorization();
 

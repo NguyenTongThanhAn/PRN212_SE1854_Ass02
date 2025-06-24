@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NewsManagementSystem.DAL.DBContext;
-using System;
+using NewsManagementSystem.DAL.SystemAccount;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BO = NewsManagementSystem.BusinessObject.Entities;
 
-namespace NewsManagementSystem.DAL.SystemAccount
+namespace NewsManagementSystem.DAL.Repositories.SystemAccount
 {
     public class SystemAccountRepo : ISystemAccountRepo
     {
@@ -13,68 +14,49 @@ namespace NewsManagementSystem.DAL.SystemAccount
 
         public SystemAccountRepo(FUNewsManagementContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
         }
 
-        public async Task<BusinessObject.Entities.SystemAccount?> GetByEmailAndPasswordAsync(string email, string password)
+        public async Task<List<BO.SystemAccount>> GetSystemAccountsAsync()
+        {
+            return await _context.SystemAccounts.ToListAsync();
+        }
+
+        public async Task<List<BO.SystemAccount>> GetSystemAccountByNameAsync(string systemAccountName)
         {
             return await _context.SystemAccounts
-                .FirstOrDefaultAsync(acc => acc.AccountEmail == email && acc.AccountPassword == password);
+                .Where(a => a.AccountName.Contains(systemAccountName))
+                .ToListAsync();
         }
 
-        public async Task CreateSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount)
+        public async Task CreateSystemAccountAsync(BO.SystemAccount systemAccount)
         {
             await _context.SystemAccounts.AddAsync(systemAccount);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount)
+        public async Task<BO.SystemAccount?> GetSystemAccountByIdAsync(short id)
         {
-            //    _context.NewsArticles.Remove(article);
-            //}
+            return await _context.SystemAccounts
+                .FirstOrDefaultAsync(a => a.AccountId == id);
+        }
 
-            //_context.SystemAccounts.Remove(systemAccount);
-            //await _context.SaveChangesAsync();
-
-            var account = await _context.SystemAccounts.Include(a=>a.NewsArticleCreatedBies).FirstOrDefaultAsync(a => a.AccountId == systemAccount.AccountId);
-            if (account == null)
-            {
-                throw new KeyNotFoundException($"System account with ID {systemAccount.AccountId} not found.");
-            }
-            account.NewsArticleCreatedBies.Clear(); 
-            _context.SystemAccounts.Remove(account); 
+        public async Task UpdateSystemAccountAsync(BO.SystemAccount systemAccount)
+        {
+            _context.SystemAccounts.Update(systemAccount);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<BusinessObject.Entities.SystemAccount?> GetSystemAccountByIdAsync(short id)
+        public async Task DeleteSystemAccountAsync(BO.SystemAccount systemAccount)
         {
-            return await _context.SystemAccounts.FindAsync(id);
-        }
-
-        public async Task<List<BusinessObject.Entities.SystemAccount>> GetSystemAccountByNameAsync(string systemAccountName)
-        {
-            return await _context.SystemAccounts.Where(x => x.AccountName.ToLower().Contains(systemAccountName.ToLower())).OrderByDescending(x => x.AccountId).ToListAsync();
-        }
-
-        public async Task<List<BusinessObject.Entities.SystemAccount>> GetSystemAccountsAsync()
-        {
-            return await _context.SystemAccounts.OrderByDescending(x => x.AccountId).ToListAsync();
-        }
-
-        public async Task UpdateSystemAccountAsync(BusinessObject.Entities.SystemAccount systemAccount)
-        {
-            var existingAccount = await _context.SystemAccounts.FindAsync(systemAccount.AccountId);
-            if (existingAccount == null)
-            {
-                throw new KeyNotFoundException($"System account with ID {systemAccount.AccountId} not found.");
-            }
-
-            existingAccount.AccountName = systemAccount.AccountName;
-            existingAccount.AccountPassword = systemAccount.AccountPassword;
-            existingAccount.AccountEmail = systemAccount.AccountEmail;
-            existingAccount.AccountRole = systemAccount.AccountRole;
-
+            _context.SystemAccounts.Remove(systemAccount);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<BO.SystemAccount?> GetByEmailAndPasswordAsync(string email, string password)
+        {
+            return await _context.SystemAccounts
+                .FirstOrDefaultAsync(a => a.AccountEmail == email && a.AccountPassword == password);
         }
     }
 }
