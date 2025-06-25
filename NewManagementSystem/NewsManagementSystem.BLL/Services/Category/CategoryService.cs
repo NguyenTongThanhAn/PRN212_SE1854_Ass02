@@ -18,6 +18,11 @@ public class CategoryService : ICategoryService
         return await _categoryRepo.GetCategoriesAsync();
     }
 
+    public async Task<List<BusinessObject.Entities.Category>> GetCategoriesActiveAsync()
+    {
+        return await _categoryRepo.GetCategoriesActiveAsync();
+    }
+
     public async Task<BusinessObject.Entities.Category?> GetCategoryByNameAsync(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

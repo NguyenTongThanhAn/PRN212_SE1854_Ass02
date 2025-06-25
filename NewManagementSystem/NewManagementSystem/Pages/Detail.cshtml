@@ -1,0 +1,67 @@
+@page "{id:int}"
+@model DetailModel
+
+@{
+    Layout = "Shared/_Layout";
+}
+
+<link rel="stylesheet" href="~/css/detail.css">
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">← Back to News</button>
+        <div class="category-badge">@Model.Article?.Category.CategoryName</div>
+        <h1 class="title">@Model.Article?.Headline</h1>
+        <div class="meta-info">
+            <span class="author">By @Model.Article?.CreatedBy.AccountName</span>
+            <span class="date">@Model.Article?.CreatedDate • 5 min read</span>
+        </div>
+    </div>
+
+<div class="content">
+        <img src="@Model.Article?.ImageUrl" alt="Article Image" class="featured-image">
+
+        <div class="article-content">
+            @Html.Raw(Model.Article?.NewsContent)
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number">1.2K</span>
+                <span class="stat-label">Shares</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">847</span>
+                <span class="stat-label">Comments</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">3.5K</span>
+                <span class="stat-label">Views</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">95%</span>
+                <span class="stat-label">Accuracy</span>
+            </div>
+        </div>
+
+        <div class="tags">
+            <div class="tags-label">Related Tags:</div>
+            @foreach (var tag in Model.Article.Tags)
+            {
+                <span class="tag">@tag.TagName</span>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function goBack() {
+        // Add subtle animation before going back
+        document.querySelector('.container').style.transition = 'all 0.3s ease';
+        document.querySelector('.container').style.transform = 'translateX(-100%)';
+        document.querySelector('.container').style.opacity = '0';
+        setTimeout(() => {
+            window.location.href = '/NewsArticles';
+        }, 300);
+    }
+</script>

@@ -9,9 +9,15 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-    Create New Article
-</button>
+<div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        Create New Article
+    </button>
+    <a href="/History/@(Model.UserId)" class="btn btn-primary">
+        My Articles
+    </a>
+</div>
+
 <!-- Create modal -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -255,8 +261,8 @@
                         }
                     </td>
                     <td>
-                        <a asp-page="/Articles/Details" asp-route-id="@article.NewsArticleId"
-                           class="btn btn-sm btn-info">View</a>
+                        <a href="/Detail/@(article.NewsArticleId)" class="btn btn-sm btn-info">View</a>
+                        
                         <button type="button"
                                 class="btn btn-warning btn-sm"
                                 data-bs-toggle="modal"
@@ -461,7 +467,7 @@
         <td>${statusText}</td>
         <td>${tags}</td>
         <td>
-            <a href="/Articles/Details?id=${article.newsArticleId}" class="btn btn-sm btn-info">View</a>
+            <a href="/Detail?id=${article.newsArticleId}" class="btn btn-sm btn-info">View</a>
             <button type="button" class="btn btn-warning btn-sm"
                 data-bs-toggle="modal" data-bs-target="#editModal"
                 data-id="${article.newsArticleId}"
@@ -504,7 +510,7 @@
         <td>${statusText}</td>
         <td>${tags}</td>
         <td>
-            <a href="/Articles/Details?id=${article.newsArticleId}" class="btn btn-sm btn-info">View</a>
+            <a href="/Detail?id=${article.newsArticleId}" class="btn btn-sm btn-info">View</a>
             <button type="button" class="btn btn-warning btn-sm"
                 data-bs-toggle="modal" data-bs-target="#editModal"
                 data-id="${article.newsArticleId}"

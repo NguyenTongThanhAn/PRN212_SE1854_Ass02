@@ -1,4 +1,4 @@
-﻿﻿using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -34,6 +34,8 @@ public class ArticlesModel : PageModel
     public List<NewsArticle> Articles { get; set; } = new();
     public List<Tag> Tags { get; set; } = new();
     public List<Category> Categories { get; set; } = new();
+    public int? UserId { get; set; }
+
 
     public ArticlesModel(IArticleService articleService, ITagService tagService, ICategoryService categoryService, IValidator<CreateArticlesRequest> createArticleReqValidator, IValidator<EditArticlesRequest> editArticleReqValidator, IHubContext<ArticlesHub> hubContext)
     {
@@ -48,12 +50,12 @@ public class ArticlesModel : PageModel
     public async Task<IActionResult> OnGet()
     { 
         var role = HttpContext.Session.GetString("Role");
-        var userId = HttpContext.Session.GetInt32("UserId");
+        UserId = HttpContext.Session.GetInt32("UserId");
         if (role != "1" && role != "0")
             return RedirectToPage("/AccessDenied");
         Articles = await _articleService.GetArticleAsync();
         Tags = await _tagService.GetAllTagsAsync();
-        Categories = await _categoryService.GetCategoriesAsync();
+        Categories = await _categoryService.GetCategoriesActiveAsync();
         ViewData["ShowCreateModal"] = "False";
         ViewData["ShowEditModal"] = "False";
         ViewData["ShowDeleteModal"] = "False";
@@ -63,14 +65,14 @@ public class ArticlesModel : PageModel
     public async Task<IActionResult> OnPostCreateAsync()
     {
         var role = HttpContext.Session.GetString("Role");
-        var userId = HttpContext.Session.GetInt32("UserId");
+        UserId = HttpContext.Session.GetInt32("UserId");
         if (role != "1" && role != "0")
             return RedirectToPage("/AccessDenied");
         
         ValidationResult result = await _createArticleReqValidator.ValidateAsync(ArticlesRequest);
         Articles = await _articleService.GetArticleAsync();
         Tags = await _tagService.GetAllTagsAsync();
-        Categories = await _categoryService.GetCategoriesAsync();
+        Categories = await _categoryService.GetCategoriesActiveAsync();
         if (!result.IsValid)
         {
             foreach (var error in result.Errors)
@@ -90,7 +92,7 @@ public class ArticlesModel : PageModel
             NewsSource = ArticlesRequest.NewsSource,
             CategoryId = ArticlesRequest.CategoryId,
             NewsStatus = ArticlesRequest.NewsStatus,
-            CreatedById = userId,    //Sẽ thay bằng ID sau khi login
+            CreatedById = UserId,    //Sẽ thay bằng ID sau khi login
             Tags = (Tags.Where(t => ArticlesRequest.Tags.Contains(t.TagId))).ToList()
         };
 
@@ -122,17 +124,17 @@ public class ArticlesModel : PageModel
     public async Task<IActionResult> OnPostEditAsync()
     {
         var role = HttpContext.Session.GetString("Role");
-        var userId = HttpContext.Session.GetInt32("UserId");
+        UserId = HttpContext.Session.GetInt32("UserId");
         if (role != "1" && role != "0")
             return RedirectToPage("/AccessDenied");
         
-        if (EditArticlesRequest.CreatedById != userId)
+        if (EditArticlesRequest.CreatedById != UserId)
             return RedirectToPage("/AccessDenied");
         
         ValidationResult result = await _editArticleReqValidator.ValidateAsync(EditArticlesRequest);
         Articles = await _articleService.GetArticleAsync();
         Tags = await _tagService.GetAllTagsAsync();
-        Categories = await _categoryService.GetCategoriesAsync();
+        Categories = await _categoryService.GetCategoriesActiveAsync();
         if (!result.IsValid)
         {
             foreach (var error in result.Errors)
@@ -153,7 +155,7 @@ public class ArticlesModel : PageModel
             NewsSource = EditArticlesRequest.NewsSource,
             CategoryId = EditArticlesRequest.CategoryId,
             NewsStatus = EditArticlesRequest.NewsStatus,
-            UpdatedById = userId,    //sẽ thay bằng ID sau khi login
+            UpdatedById = UserId,    //sẽ thay bằng ID sau khi login
             Tags = (Tags.Where(t => EditArticlesRequest.Tags.Contains(t.TagId))).ToList()
         };
 
@@ -192,13 +194,13 @@ public class ArticlesModel : PageModel
     public async Task<IActionResult> OnPostDeleteAsync()
     {
         var role = HttpContext.Session.GetString("Role");
-        var userId = HttpContext.Session.GetInt32("UserId");
+        UserId = HttpContext.Session.GetInt32("UserId");
         if (role != "1" && role != "0")
             return RedirectToPage("/AccessDenied");
         
         Articles = await _articleService.GetArticleAsync();
         Tags = await _tagService.GetAllTagsAsync();
-        Categories = await _categoryService.GetCategoriesAsync();
+        Categories = await _categoryService.GetCategoriesActiveAsync();
         var deleted = await _articleService.DeleteArticleByIdAsync(ArticleIdToDelete);
         var articleDto = new {
             deleted.NewsArticleId,

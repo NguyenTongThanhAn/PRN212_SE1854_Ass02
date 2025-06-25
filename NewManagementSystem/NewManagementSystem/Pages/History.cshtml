@@ -1,0 +1,116 @@
+@page "{id:int}"
+@model NewsManagementSystem.HistoryModel
+
+@{
+Layout = "Shared/_Layout";
+}
+
+<link rel="stylesheet" href="~/css/history.css" />
+
+<div class="dashboard">
+    <main class="main-content">
+        <div class="header fade-in">
+            <h1 class="header-title">My Articles</h1>
+        </div>
+
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-number">@Model.Articles.Count</div>
+                <div class="stat-label">Total Articles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">12.5K</div>
+                <div class="stat-label">Total Views</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">892</div>
+                <div class="stat-label">Total Likes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">156</div>
+                <div class="stat-label">Comments</div>
+            </div>
+        </div>
+
+        <div class="articles-section fade-in">
+            <div class="section-header">
+                <h2 class="section-title">Recent Articles</h2>
+                <div class="filters">
+                    <select class="filter-select" id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+
+                    <select class="filter-select" id="categoryFilter">
+                        <option value="all">All Categories</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                        <option value="@category.CategoryName.ToLower()">@category.CategoryName</option>
+                        }
+                    </select>
+
+                    <input type="text" class="search-box" placeholder="Search articles..." id="searchBox">
+                </div>
+            </div>
+
+            <div class="articles-grid" id="articlesGrid">
+                @foreach (var article in Model.Articles)
+                {
+                <div class="article-card">
+                    <img src="@article.ImageUrl" alt="Article" class="article-image">
+                    <div class="article-content">
+                        <div class="article-header">
+                            <div>
+                                <h3 class="article-title">@article.Headline</h3>
+                                <div class="article-meta">
+                                    <span class="article-date">📅 @article.CreatedDate</span>
+                                    <span>🏷️</span> <span class="article-category">@article.Category.CategoryName</span>
+                                </div>
+                            </div>
+                            <span class="article-status status-@article.NewsStatus">@(article.NewsStatus ? "Active" : "InActive")</span>
+                        </div>
+                        <p class="article-excerpt">@article.NewsContent</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const statusFilter = document.getElementById('statusFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const searchBox = document.getElementById('searchBox');
+    const articlesGrid = document.getElementById('articlesGrid');
+
+    function filterArticles() {
+        const articles = articlesGrid.querySelectorAll('.article-card');
+        const statusValue = statusFilter.value.toLowerCase();
+        const categoryValue = categoryFilter.value.toLowerCase();
+        const searchValue = searchBox.value.toLowerCase();
+
+        articles.forEach(article => {
+            const status = article.querySelector('.article-status')?.textContent.toLowerCase() ?? '';
+            const category = article.querySelector('.article-category')?.textContent.toLowerCase() ?? '';
+            const title = article.querySelector('.article-title')?.textContent.toLowerCase() ?? '';
+            const excerpt = article.querySelector('.article-excerpt')?.textContent.toLowerCase() ?? '';
+
+            const statusMatch = statusValue === 'all' || status === statusValue;
+            const categoryMatch = categoryValue === 'all' || category === categoryValue;
+            const searchMatch = searchValue === '' || title.includes(searchValue) || excerpt.includes(searchValue);
+
+            if (statusMatch && categoryMatch && searchMatch) {
+                article.style.display = 'flex';
+                article.style.animation = 'fadeIn 0.3s ease';
+            } else {
+                article.style.display = 'none';
+            }
+        });
+    }
+
+    statusFilter.addEventListener('change', filterArticles);
+    categoryFilter.addEventListener('change', filterArticles);
+    searchBox.addEventListener('input', filterArticles);
+</script>
