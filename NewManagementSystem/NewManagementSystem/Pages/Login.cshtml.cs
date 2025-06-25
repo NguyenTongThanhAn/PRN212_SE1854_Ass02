@@ -62,5 +62,11 @@ namespace NewsManagementSystem.Pages
 
             return RedirectToPage("/Articles");
         }
+
+        public IActionResult OnPostLogout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToPage("/NewsArticles");
+        }
     }
 }
