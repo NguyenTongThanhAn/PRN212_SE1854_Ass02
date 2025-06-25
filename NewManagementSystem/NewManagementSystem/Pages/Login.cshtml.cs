@@ -60,7 +60,7 @@ namespace NewsManagementSystem.Pages
                 return RedirectToPage("/SystemAccounts");
             }
 
-            return RedirectToPage("/Articles");
+            return RedirectToPage("/NewsArticles");
         }
 
         public IActionResult OnPostLogout()

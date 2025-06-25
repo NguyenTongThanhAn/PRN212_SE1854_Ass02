@@ -7,6 +7,103 @@
 
 <link rel="stylesheet" href="~/css/detail.css">
 
+<style>
+    .article-content {
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.6;
+        font-size: 1rem;
+    }
+
+    .featured-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .header .title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+
+    .category-badge {
+        display: inline-block;
+        background-color: #e0e0e0;
+        color: #333;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .meta-info {
+        font-size: 0.9rem;
+        color: #777;
+        margin-bottom: 1rem;
+    }
+
+    .stats {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+        border-top: 1px solid #eee;
+        padding-top: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        flex: 1;
+    }
+
+    .stat-number {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .tags {
+        margin-top: 2rem;
+    }
+
+    .tag {
+        background-color: #f1f1f1;
+        color: #333;
+        padding: 0.3rem 0.7rem;
+        border-radius: 16px;
+        margin-right: 0.5rem;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    .back-btn {
+        background-color: transparent;
+        border: none;
+        color: #007bff;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-bottom: 1rem;
+    }
+
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+</style>
+
 <div class="container">
     <div class="header">
         <button class="back-btn" onclick="goBack()">← Back to News</button>
@@ -14,12 +111,12 @@
         <h1 class="title">@Model.Article?.Headline</h1>
         <div class="meta-info">
             <span class="author">By @Model.Article?.CreatedBy.AccountName</span>
-            <span class="date">@Model.Article?.CreatedDate • 5 min read</span>
+            <span class="date">@Model.Article?.CreatedDate?.ToString("dd/MM/yyyy") • 5 min read</span>
         </div>
     </div>
 
-<div class="content">
-        <img src="@Model.Article?.ImageUrl" alt="Article Image" class="featured-image">
+    <div class="content">
+        <img src="@Model.Article?.ImageUrl" alt="Article Image" class="featured-image" />
 
         <div class="article-content">
             @Html.Raw(Model.Article?.NewsContent)
@@ -28,24 +125,24 @@
         <div class="stats">
             <div class="stat-item">
                 <span class="stat-number">1.2K</span>
-                <span class="stat-label">Shares</span>
+                <div class="stat-label">Shares</div>
             </div>
             <div class="stat-item">
                 <span class="stat-number">847</span>
-                <span class="stat-label">Comments</span>
+                <div class="stat-label">Comments</div>
             </div>
             <div class="stat-item">
                 <span class="stat-number">3.5K</span>
-                <span class="stat-label">Views</span>
+                <div class="stat-label">Views</div>
             </div>
             <div class="stat-item">
                 <span class="stat-number">95%</span>
-                <span class="stat-label">Accuracy</span>
+                <div class="stat-label">Accuracy</div>
             </div>
         </div>
 
-        <div class="tags">
-            <div class="tags-label">Related Tags:</div>
+        <div class="tags mt-4">
+            <div class="tags-label fw-semibold mb-2">Related Tags:</div>
             @foreach (var tag in Model.Article.Tags)
             {
                 <span class="tag">@tag.TagName</span>
@@ -56,7 +153,6 @@
 
 <script>
     function goBack() {
-        // Add subtle animation before going back
         document.querySelector('.container').style.transition = 'all 0.3s ease';
         document.querySelector('.container').style.transform = 'translateX(-100%)';
         document.querySelector('.container').style.opacity = '0';
