@@ -40,10 +40,10 @@ namespace NewsManagementSystem
             builder.Services.AddScoped<ITagService, TagService>();
             builder.Services.AddScoped<ISystemAccountService, SystemAccountService>();
 
-            // ✅ Register FluentValidation (nếu dùng)
+            // ✅ Register FluentValidation
             builder.Services.AddValidatorsFromAssemblyContaining<SystemAccountValidator>();
 
-            // ✅ Register Session (phân quyền dùng Session)
+            // ✅ Register Session
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -51,16 +51,17 @@ namespace NewsManagementSystem
                 options.Cookie.IsEssential = true;
             });
 
-            // ✅ Add Razor Pages & SignalR
-            builder.Services.AddRazorPages();
-            builder.Services.AddSignalR();
+            // ✅ Razor Pages with default route override
+            builder.Services.AddRazorPages(options =>
+            {
+                options.Conventions.AddPageRoute("/NewsArticles", "");
+            });
 
-            // ✅ Optional: If you need HttpContext outside Razor Pages
+            builder.Services.AddSignalR();
             builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
-            // 🔧 Configure middleware
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
@@ -71,10 +72,7 @@ namespace NewsManagementSystem
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            // ✅ Session MUST go before authorization
             app.UseSession();
-
             app.UseAuthorization();
 
             app.MapRazorPages();
@@ -84,4 +82,3 @@ namespace NewsManagementSystem
         }
     }
 }
-    

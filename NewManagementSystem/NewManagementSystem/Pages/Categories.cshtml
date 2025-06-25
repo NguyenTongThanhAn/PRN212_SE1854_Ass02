@@ -1,33 +1,66 @@
 ﻿@page
 @model NewManagementSystem.Pages.Categories
-
 @{
     Layout = "Shared/_Layout";
-    ViewData["title"] = "Categories";
+    ViewData["Title"] = "Categories";
 }
 
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<!-- Create Button -->
-<div class="card mb-4 shadow-sm">
-    <div class="card-body d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">@ViewData["Title"]</h2>
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-            <i class="bi bi-plus-circle"></i> Create Category
-        </button>
-    </div>
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="text-end mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+        <i class="bi bi-plus-circle"></i> Create Category
+    </button>
 </div>
 
+@if (Model.Category.Count == 0)
+{
+    <div class="alert alert-secondary text-center">There is no category here.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var category in Model.Category)
+        {
+            <div class="col">
+                <div class="card shadow-sm h-100 border-0">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">@category.CategoryName</h5>
+                            <span class="badge @(category.IsActive ? "bg-success" : "bg-secondary")">
+                                @(category.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </div>
+                        <p class="card-text text-muted flex-grow-1">@category.CategoryDesciption</p>
+
+                        <div class="d-flex justify-content-end gap-2 pt-3">
+                            <button class="btn btn-sm btn-warning" onclick="openEditModal(@category.CategoryId)">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                            @if (!Model.CategoryHasArticle.ContainsKey(category.CategoryId) || !Model.CategoryHasArticle[category.CategoryId])
+                            {
+                                <button class="btn btn-sm btn-danger" onclick="openDeleteModal(@category.CategoryId)">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 <!-- Create Category Modal -->
-<div class="modal-content shadow rounded">
 <div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content shadow">
             <form method="post" asp-page-handler="Create">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createCategoryModalLabel">Create Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Create Category</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -49,24 +82,22 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Create</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-</div>
 
 <!-- Edit Category Modal -->
-<div class="modal-content shadow rounded">
 <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content shadow">
             <form method="post" asp-page-handler="Edit">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Edit Category</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" asp-for="EditCategory.CategoryId" id="editCategoryId" />
@@ -89,87 +120,34 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-warning" type="submit">Save</button>
                 </div>
             </form>
         </div>
     </div>
-</div>
 </div>
 
 <!-- Delete Category Modal -->
 <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content shadow">
             <form method="post" asp-page-handler="Delete">
-                <input type="hidden" asp-for="DeleteCategoryId" id="deleteCategoryId" name="DeleteCategoryId" />
-
+                <input type="hidden" asp-for="DeleteCategoryId" id="deleteCategoryId" />
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteCategoryModalLabel">Delete Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Delete Category</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete this category?</p>
+                    <p class="mb-0">Are you sure you want to delete this category?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger" type="submit">Delete</button>
                 </div>
             </form>
         </div>
     </div>
-</div>
-
-<div>
-    @if (Model.Category.Count == 0)
-    {
-        <p class="text-muted">There is no category here</p>
-    }
-    else
-    {
-        <table class="table table-hover table-bordered rounded shadow-sm">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Category ID</th>
-                    <th>Category Name</th>
-                    <th>Category Description</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.Category.Count; i++)
-                {
-                    var category = Model.Category[i];
-                    <tr>
-                        <td>@category.CategoryId</td>
-                        <td>@category.CategoryName</td>
-                        <td>@category.CategoryDesciption</td>
-                        <td>
-                            <span class="badge @(category.IsActive ? "bg-success" : "bg-secondary")">
-                                @(category.IsActive ? "Active" : "Inactive")
-                            </span>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-primary"
-                                    onclick="openEditModal(@category.CategoryId)">
-                                Edit
-                            </button>
-                            @if (!Model.CategoryHasArticle.ContainsKey(category.CategoryId) || !Model.CategoryHasArticle[category.CategoryId])
-                            {
-                                <button type="button" class="btn btn-sm btn-danger"
-                                        onclick="openDeleteModal(@category.CategoryId)">
-
-                                    Delete
-                                </button>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
 </div>
 
 @section Scripts {
@@ -183,17 +161,13 @@
                     document.getElementById('editCategoryName').value = data.categoryName;
                     document.getElementById('editCategoryDesciption').value = data.categoryDesciption;
                     document.getElementById('editCategoryIsActive').value = data.isActive;
-                    var modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
-                    modal.show();
+                    new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
                 });
         }
 
-
-
         function openDeleteModal(categoryId) {
             document.getElementById('deleteCategoryId').value = categoryId;
-            var modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
         }
     </script>
 }
