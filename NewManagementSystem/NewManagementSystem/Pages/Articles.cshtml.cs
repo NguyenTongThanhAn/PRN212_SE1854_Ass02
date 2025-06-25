@@ -109,6 +109,7 @@ public class ArticlesModel : PageModel
             created.CreatedBy.AccountName,
             created.CreatedDate,
             created.ModifiedDate,
+            created.ImageUrl,
             Tags = created.Tags?.Select(t => new
             {
                 t.TagId,
@@ -171,6 +172,7 @@ public class ArticlesModel : PageModel
             updated.CreatedBy.AccountName,
             updated.CreatedDate,
             updated.ModifiedDate,
+            updated.ImageUrl,
             Tags = updated.Tags?.Select(t => new {
                 t.TagId,
                 t.TagName
