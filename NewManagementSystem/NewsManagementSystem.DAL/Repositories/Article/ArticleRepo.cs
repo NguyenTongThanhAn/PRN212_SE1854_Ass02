@@ -30,6 +30,15 @@ public class ArticleRepo : IArticleRepo
             .FirstOrDefaultAsync(a => a.NewsTitle == name);
     }
 
+    public async Task<NewsArticle?> GetArticleByIdAsync(int articleId)
+    {
+        return await _context.NewsArticles
+            .Include(a => a.Category)
+            .Include(a => a.Tags)
+            .Include(a => a.CreatedBy)
+            .FirstOrDefaultAsync(a => a.NewsArticleId == articleId);
+    }
+
     public async Task<List<NewsArticle>> GetActiveArticlesAsync()
     {
         return await _context.NewsArticles
@@ -147,7 +156,7 @@ public class ArticleRepo : IArticleRepo
         return result;
     }
     
-    public async Task<List<NewsArticle>> GetArticlesByAccountIdAsync(short userId)
+    public async Task<List<NewsArticle>> GetArticlesByAccountIdAsync(int userId)
     {
         return await _context.NewsArticles
             .Where(x => x.CreatedById == userId)

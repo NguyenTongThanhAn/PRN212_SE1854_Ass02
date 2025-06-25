@@ -6,6 +6,7 @@ public interface IArticleRepo
 {
     Task<List<NewsArticle>> GetArticleAsync();
     Task<List<NewsArticle>> GetArticlesyncOderByDescending();
+    Task<NewsArticle?> GetArticleByIdAsync(int articleId);
     Task<List<NewsArticle>> GetActiveArticlesAsync();
     Task<List<NewsArticle>> GetArticlesByCategoryIdAsync(short categoryId);
     Task<NewsArticle> CreateArticleAsync(NewsArticle category);
@@ -13,6 +14,6 @@ public interface IArticleRepo
     Task<NewsArticle> DeleteArticleAsync(int articleID);
     Task<List<NewsArticle>> GetArticlesByNameAsync(string search);
     Task<List<NewsArticle>> GetArticleByDateRange(DateTime? startDate, DateTime? endDate);
-    Task<List<NewsArticle>> GetArticlesByAccountIdAsync(short userId);
+    Task<List<NewsArticle>> GetArticlesByAccountIdAsync(int userId);
 
 }

@@ -18,7 +18,14 @@ public class CategoryRepo : ICategoryRepo
         return await _context.Categories
             .ToListAsync();
     }
-    
+
+    public async Task<List<BusinessObject.Entities.Category>> GetCategoriesActiveAsync()
+    {
+        return await _context.Categories
+            .Where(c => c.IsActive)
+            .ToListAsync();
+    }
+
     public async Task<BusinessObject.Entities.Category?> GetCategoryByNameAsync(string categoryName)
     {
         if (string.IsNullOrWhiteSpace(categoryName))

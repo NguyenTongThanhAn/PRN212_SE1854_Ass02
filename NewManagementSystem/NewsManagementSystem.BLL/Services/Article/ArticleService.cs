@@ -26,8 +26,7 @@ public class ArticleService : IArticleService
 
     public async Task<NewsArticle?> GetArticleByIdWithTagsAsync(int id)
     {
-        var list = await _articleRepo.GetArticleAsync();
-        return list.FirstOrDefault(x => x.NewsArticleId == id);
+        return await _articleRepo.GetArticleByIdAsync(id);
     }
     
     public async Task<List<NewsArticle>> GetArticlesByCategoryIdAsync(short categoryId)
@@ -64,7 +63,7 @@ public class ArticleService : IArticleService
         return await _articleRepo.GetArticleByDateRange(startDate, endDate);
     }
     
-    public async Task<List<NewsArticle>> GetArticlesByAccountIdAsync(short userId)
+    public async Task<List<NewsArticle>> GetArticlesByAccountIdAsync(int userId)
     {
         return  await _articleRepo.GetArticlesByAccountIdAsync(userId);
     }

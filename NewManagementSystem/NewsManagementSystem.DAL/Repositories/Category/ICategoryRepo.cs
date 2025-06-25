@@ -4,6 +4,7 @@ using BusinessObject.Entities;
 public interface ICategoryRepo
 {
     Task<List<Category>> GetCategoriesAsync();   
+    Task<List<Category>> GetCategoriesActiveAsync();   
     Task<Category?> GetCategoryByNameAsync(string categoryName);
     Task<Category?> GetCategoryByIdAsync(int categoryId);
     Task CreateCategoryAsync(Category category);

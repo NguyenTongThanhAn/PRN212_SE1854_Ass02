@@ -5,6 +5,7 @@ using BusinessObject.Entities;
 public interface ICategoryService
 {
     Task<List<Category>> GetCategoriesAsync();
+    Task<List<Category>> GetCategoriesActiveAsync();
     Task<Category?> GetCategoryByNameAsync(string name);
     Task<Category?> GetCategoryByIdAsync(int categoryId);
     Task CreateCategoryAsync(Category category);
