@@ -109,10 +109,12 @@ Layout = "Shared/_Layout";
     const connection = new signalR.HubConnectionBuilder().withUrl("/articlesHub").build();
 
     connection.on("ReceiveNewArticle", function (article) {
+        console.log(article);
         if (article.newsStatus) insertArticleCard(article);
     });
 
     connection.on("ReceiveUpdatedArticle", function (article) {
+        console.log(article);
         if (article.newsStatus) {
             const existingCard = document.querySelector(`[data-article-id="${article.newsArticleId}"]`);
             if (existingCard) {

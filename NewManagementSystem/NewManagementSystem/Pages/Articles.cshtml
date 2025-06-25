@@ -73,11 +73,11 @@
                         </select>
                         <span asp-validation-for="ArticlesRequest.NewsStatus" class="text-danger"></span>
                     </div>
-                    <div class="mb-3">
-                        <input type="file" class="form-control" name="ArticlesRequest.ImageUrl" accept="image/*"
-                               placeholder="Upload Image">
-                        <span asp-validation-for="ArticlesRequest.ImageUrl" class="text-danger"></span>
-                    </div>
+                    @* <div class="mb-3"> *@
+                    @*     <input type="file" class="form-control" name="ArticlesRequest.ImageUrl" accept="image/*" *@
+                    @*            placeholder="Upload Image"> *@
+                    @*     <span asp-validation-for="ArticlesRequest.ImageUrl" class="text-danger"></span> *@
+                    @* </div> *@
                     <div class="mb-3 d-flex flex-wrap justify-content-center">
                         @{ var i = 0; }
                         @foreach (var tag in Model.Tags)
@@ -159,11 +159,11 @@
                         </select>
                         <span asp-validation-for="EditArticlesRequest.NewsStatus" class="text-danger"></span>
                     </div>
-                    <div class="mb-3">
-                        <input type="file" class="form-control" id="image-file" name="EditArticlesRequest.ImageUrl"
-                               accept="image/*" placeholder="Upload Image">
-                        @* <span asp-validation-for="EditArticlesRequest.ImageUrl" class="text-danger"></span> *@
-                    </div>
+                    @* <div class="mb-3"> *@
+                    @*     <input type="file" class="form-control" id="image-file" name="EditArticlesRequest.ImageUrl" *@
+                    @*            accept="image/*" placeholder="Upload Image"> *@
+                    @*     $1$ <span asp-validation-for="EditArticlesRequest.ImageUrl" class="text-danger"></span> #1# *@
+                    @* </div> *@
                     <div class="mb-3 d-flex flex-wrap justify-content-center">
                         @{var i = 0; }
                         @foreach (var tag in Model.Tags)
