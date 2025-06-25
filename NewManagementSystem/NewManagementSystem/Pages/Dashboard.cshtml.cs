@@ -16,35 +16,56 @@ public class DashboardModel : PageModel
     [BindProperty(SupportsGet = true)] public DateTime? StartDate { get; set; }
     [BindProperty(SupportsGet = true)] public DateTime? EndDate { get; set; }
 
-    public List<ChartData> ChartPoints { get; set; } = new();
-
+    public List<ChartData> ChartPointsByDay { get; set; } = new();
+    public List<ChartData> ChartPointsByYear { get; set; } = new();
+    public bool ShowChart { get; set; }
     public async Task<IActionResult> OnGetAsync()
     {
-        var from = StartDate?.Date ?? DateTime.Today.AddDays(-7);
-        var to = (EndDate?.Date ?? DateTime.Today).AddDays(1).AddTicks(-1);
+        ShowChart = StartDate.HasValue && EndDate.HasValue;
 
-        var data = await _articleService.GetArticleByDateRange(from, to);
+        if (ShowChart)
+        {
+            var from = StartDate.Value.Date;
+            var to = EndDate.Value.Date.AddDays(1).AddTicks(-1);
 
+            var data = await _articleService.GetArticleByDateRange(from, to);
 
-        ChartPoints = data
-            .Where(a => a.CreatedDate.HasValue)
-            .GroupBy(a => a.CreatedDate!.Value.Date)
-            .Select(g => new ChartData
-            {
-                Date = g.Key.ToString("yyyy-MM-dd"),
-                TotalArticles = g.Count()
-            })
-            .OrderByDescending(c => c.Date)
-            .ToList();
-        
-        Console.WriteLine($"StartDate: {from:yyyy-MM-dd}, EndDate: {to:yyyy-MM-dd}");
+            // Theo ngày
+            ChartPointsByDay = data
+                .Where(a => a.CreatedDate.HasValue)
+                .GroupBy(a => a.CreatedDate!.Value.Date)
+                .Select(g => new ChartData
+                {
+                    Date = g.Key.ToString("yyyy-MM-dd"),
+                    TotalArticles = g.Count()
+                })
+                .OrderByDescending(c => c.Date)
+                .ToList();
+
+            // Theo năm
+            ChartPointsByYear = data
+                .Where(a => a.CreatedDate.HasValue)
+                .GroupBy(a => a.CreatedDate!.Value.Year)
+                .Select(g => new ChartData
+                {
+                    Date = g.Key.ToString(), // Năm
+                    TotalArticles = g.Count()
+                })
+                .OrderByDescending(c => c.Date)
+                .ToList();
+        }
+        else
+        {
+            ChartPointsByDay = new List<ChartData>();
+            ChartPointsByYear = new List<ChartData>();
+        }
 
         return Page();
     }
 
     public class ChartData
     {
-        public string Date { get; set; }
+        public string Date { get; set; } = string.Empty;
         public int TotalArticles { get; set; }
     }
 }

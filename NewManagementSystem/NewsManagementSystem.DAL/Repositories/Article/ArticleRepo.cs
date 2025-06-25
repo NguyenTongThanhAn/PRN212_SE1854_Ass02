@@ -147,9 +147,9 @@ public class ArticleRepo : IArticleRepo
             .Where(a => a.CreatedDate != null)
             .ToListAsync();
 
-        return allArticles
-            .Where(a => a.CreatedDate!.Value.Date >= fromDate && a.CreatedDate!.Value.Date <= toDate)
-            .ToList();
+        return await _context.NewsArticles
+    .Where(a => a.CreatedDate >= startDate && a.CreatedDate <= endDate)
+    .ToListAsync();
     }
 
 
