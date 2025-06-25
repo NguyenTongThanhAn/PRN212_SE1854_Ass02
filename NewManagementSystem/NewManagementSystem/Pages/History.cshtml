@@ -65,7 +65,7 @@ Layout = "Shared/_Layout";
                                 <h3 class="article-title">@article.Headline</h3>
                                 <div class="article-meta">
                                     <span class="article-date">📅 @article.CreatedDate</span>
-                                    <span>🏷️</span> <span class="article-category">@article.Category.CategoryName</span>
+                                    <span>🏷️</span><span class="article-category">@article.Category.CategoryName</span>
                                 </div>
                             </div>
                             <span class="article-status status-@article.NewsStatus">@(article.NewsStatus ? "Active" : "InActive")</span>

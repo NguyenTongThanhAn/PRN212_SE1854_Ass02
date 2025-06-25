@@ -19,7 +19,8 @@ public class ArticleRepo : IArticleRepo
             .Include(a => a.Category)
             .Include(a => a.Tags)
             .Include(a => a.CreatedBy)
-            .OrderByDescending(a => a.CreatedDate)
+            .OrderByDescending(a => a.NewsStatus)
+            .ThenByDescending(a => a.CreatedDate)
             .ToListAsync();
     }
 
