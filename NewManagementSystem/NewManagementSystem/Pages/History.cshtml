@@ -2,10 +2,21 @@
 @model NewsManagementSystem.HistoryModel
 
 @{
-Layout = "Shared/_Layout";
+    Layout = "Shared/_Layout";
 }
 
 <link rel="stylesheet" href="~/css/history.css" />
+
+<style>
+    .article-excerpt {
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.5;
+        font-size: 0.95rem;
+        color: #333;
+    }
+</style>
 
 <div class="dashboard">
     <main class="main-content">
@@ -46,7 +57,7 @@ Layout = "Shared/_Layout";
                         <option value="all">All Categories</option>
                         @foreach (var category in Model.Categories)
                         {
-                        <option value="@category.CategoryName.ToLower()">@category.CategoryName</option>
+                            <option value="@category.CategoryName.ToLower()">@category.CategoryName</option>
                         }
                     </select>
 
@@ -57,22 +68,23 @@ Layout = "Shared/_Layout";
             <div class="articles-grid" id="articlesGrid">
                 @foreach (var article in Model.Articles)
                 {
-                <div class="article-card">
-                    <img src="@article.ImageUrl" alt="Article" class="article-image">
-                    <div class="article-content">
-                        <div class="article-header">
-                            <div>
-                                <h3 class="article-title">@article.Headline</h3>
-                                <div class="article-meta">
-                                    <span class="article-date">📅 @article.CreatedDate</span>
-                                    <span>🏷️</span><span class="article-category">@article.Category.CategoryName</span>
+                    <div class="article-card">
+                        <img src="@article.ImageUrl" alt="Article" class="article-image">
+                        <div class="article-content">
+                            <div class="article-header">
+                                <div>
+                                    <h3 class="article-title">@article.Headline</h3>
+                                    <div class="article-meta">
+                                        <span class="article-date">📅 @article.CreatedDate</span>
+                                        <span>🏷️</span>
+                                        <span class="article-category">@article.Category.CategoryName</span>
+                                    </div>
                                 </div>
+                                <span class="article-status status-@article.NewsStatus">@(article.NewsStatus ? "Active" : "InActive")</span>
                             </div>
-                            <span class="article-status status-@article.NewsStatus">@(article.NewsStatus ? "Active" : "InActive")</span>
+                            <p class="article-excerpt">@article.NewsContent</p>
                         </div>
-                        <p class="article-excerpt">@article.NewsContent</p>
                     </div>
-                </div>
                 }
             </div>
         </div>
